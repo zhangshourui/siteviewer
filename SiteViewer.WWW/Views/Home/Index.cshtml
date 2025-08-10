@@ -1,0 +1,94 @@
+﻿@using System.IO;
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+@section header {
+    <link rel="stylesheet" href="~/css/home.min.css" asp-append-version="true" />
+}
+@section scripts {
+    <script src="~/js/home.js"></script>
+
+}
+<div class="home">
+    @* <h4> Resource: @ViewBag.ResourceRoot </h4> *@
+
+    <h5 class="dir-head">
+        <span class="dir-actions">
+            @if (!string.IsNullOrEmpty(ViewBag.ParentDirectory))
+            {
+                <a href="@Url.Action("Index", "Home", new { p = ViewBag.ParentDirectoryLink })">↑向上</a>
+            }
+        </span>
+        <span>
+            @if (!string.IsNullOrEmpty(ViewBag.ParentDirectory))
+            {
+                @ViewBag.ParentDirectory
+            }
+            else
+            {
+                @:/根目录
+            }
+
+        </span>
+    </h5>
+    @{
+        var subDirectories = ViewBag.SubDirectories as List<DirectoryEntry>;
+
+        if (subDirectories != null)
+        {
+            // each ViewBag.SubDirectories
+            <div class="res-list -container">
+                <ul class="res-list ">
+                    @foreach (var subDir in subDirectories)
+                    {
+                        <li class="dir">
+                            <a href="@Url.Action("Index", "Home",
+                                                new { p =System.IO.Path.Combine( subDir.ParentDirectory, subDir.DirectoryName) })"
+                               class="dir-link">
+                                <img src="~/images/icons/directory.svg" class="icon-dir" />
+                                @subDir.DirectoryName
+                                <span class="sub-name">
+                                    @subDir.LastTime.ToString("yyyy-MM-dd")
+                                </span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+        else
+        {
+
+        }
+    }
+    @if (ViewBag.Files != null)
+    {
+        // each ViewBag.Files
+        <div class="res-list-container">
+            <ul class="res-list">
+                @{
+                    var files = ViewBag.Files as List<FileEntry>;
+                    if (files == null)
+                    {
+                        files = new List<FileEntry>();
+                    }
+                    foreach (var file in files)
+                    {
+                        <li class="file">
+                            <a href="@Url.Action("ViewFile", "Home", new { p = ViewBag.ParentDirectory + System.IO.Path.DirectorySeparatorChar + file.FileName })"
+                               data-fileid="@file.FileId"
+                               class="detail-link">
+                                @file.FileName
+                                <span class="sub-name">
+                                    @file.LastTime.ToString("yyyy-MM-dd")
+                                </span>
+                            </a>
+                        </li>
+                    }
+                }
+
+            </ul>
+        </div>
+    }
+</div>

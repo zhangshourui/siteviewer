@@ -1,0 +1,100 @@
+﻿.home {
+    .dir-head {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        background-color: #fff;
+        border-bottom: 1px solid #ddd;
+        padding: 0.5em;
+        font-size: 1.2em;
+        font-weight: bold;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5em;
+        word-break: break-all;
+        //  justify-content: space-between;
+        //> a {
+        //    text-decoration: none;
+        //    color: #333;
+        //    &:hover {
+        //        color: #007bff;
+        //    }
+        //}
+
+        > .dir-actions {
+            display: flex;
+
+            > a {
+                text-decoration: none;
+                color: #333;
+                padding: 0.25em 0.5em;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                gap: 0.5em;
+                //   display: inline-block;
+                white-space: nowrap;
+                display: flex;
+                align-items: center;
+
+                &:hover {
+                    background-color: #f3f3f3;
+                    color: #007bff;
+                }
+            }
+        }
+    }
+
+    ul.res-list {
+        padding: 0px;
+        list-style: none;
+        margin-bottom: 0;
+
+        > li {
+            padding: .5em;
+            border-bottom: 1px solid #ddd;
+
+            &:empty {
+                display: none;
+            }
+
+            &:hover {
+                background-color: #f3f3f3;
+            }
+
+            &.file {
+                padding-left: 1em;
+            }
+
+            .icon-dir {
+                width: 1rem;
+            }
+
+            .sub-name {
+                font-size: 0.6em;
+                font-style: italic;
+                color: #a4a4a4;
+            }
+
+            a {
+                text-decoration: none;
+
+                &.detail-link {
+                    &.visited {
+                        color: #86b7fe;
+                        font-style: italic;
+                    }
+                }
+            }
+        }
+    }
+    // 小屏幕下 ，长单词强制换行
+    @media (max-width: 720px) {
+        ul.res-list {
+            > li {
+                a.detail-link, a.dir-link {
+                    word-break: break-all;
+                }
+            }
+        }
+    }
+}
