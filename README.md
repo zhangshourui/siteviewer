@@ -56,5 +56,5 @@ All configuration is in appsettings-{environment}.json.
 - Ffmpeg: Specify the path to the FFmpeg.exe file. It is used to convert videos into streamable formats for online playback. If not configured, video playback will not be available.
 
 ### Dependences
-If you'r using visual studio, [Web Comppiler](https://marketplace.visualstudio.com/items?itemName=MadsKristensen.WebCompiler)  should be installed from convert scss/less file into css file
+If you'r using visual studio, [Web Comppiler](https://marketplace.visualstudio.com/items?itemName=MadsKristensen.WebCompiler)  should be installed for converting scss/less file into css file
 
