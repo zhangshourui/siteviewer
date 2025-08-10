@@ -1,0 +1,32 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "播放";
+}
+@section header {
+    <link rel="stylesheet" href="~/css/play.min.css" asp-append-version="true" />
+}
+@section scripts {
+    <script>
+        window.videoUrl=`@Html.Raw(ViewBag.VideoUrl)`;
+    </script>
+    <script src="~/js/hls.js" asp-append-version="true"></script>
+    <script src="~/js/play.js" asp-append-version="true"></script>
+
+}
+<div class="play">
+    <div class="row">
+        <div class="col">
+            @* 视频播放器，支持ts、mp4*@
+            <div id="video-container" class="video-player">
+                <h4 class="video-title">@ViewBag.File</h4>
+                <video id="videoPlayer" preload="auto" controls>
+                    @* <source src="@ViewBag.VideoUrl" type="video/mp4"> *@
+                    您的浏览器不支持 HTML5 视频。
+                </video>
+
+            </div>
+        </div>
+    </div>
+</div>

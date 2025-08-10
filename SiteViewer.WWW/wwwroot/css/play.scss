@@ -1,0 +1,19 @@
+﻿.play {
+    #video-container {
+        position: relative;
+        width: 100%;
+        max-width: 800px;
+        background: #000;
+        margin: 0 auto;
+
+        video {
+            width: 100%;
+            height: auto;
+        }
+
+        .video-title {
+            color: #999;
+            padding:0.5em;
+        }
+    }
+}
