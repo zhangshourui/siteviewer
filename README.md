@@ -58,7 +58,7 @@ Settings are in appsettings-{environment}.json:
 | `Ffmpeg`                   | string   | ffmpeg        | Specify the path to the FFmpeg.exe file. It is used to convert videos into streamable formats for online playback. If not configured, video playback will not be available.    |
 
 ### Dependences
-- Visual Studio Users: Install Web Compiler extension for SCSS/LESS compilation.
+- Visual Studio Users: Install [Web Compiler](https://marketplace.visualstudio.com/items?itemName=MadsKristensen.WebCompiler) extension for SCSS/LESS compilation.
 
 # Features
 - File and directory browsing
