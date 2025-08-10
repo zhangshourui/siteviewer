@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { Alert, Button, Flex } from 'antd';
 import { httpRequest } from "~/utils";
-import type { MsgRespBase } from "~/utils/httpRequest";
+import type { MsgRespBase } from "~/utils/global";
 import './play.scss';
 import Hls from "hls.js";
 

@@ -47,6 +47,8 @@
 
         public static string[]? AccessControlAllowOrigin { get; set; }
 
+        public static string? Ffmpeg { get; set; }
+
     }
 
     public static class AppConfigExtension

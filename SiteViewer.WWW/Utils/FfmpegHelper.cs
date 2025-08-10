@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using SiteViewer.WWW.AppService;
 
 namespace Utils;
 
@@ -44,13 +45,17 @@ public class FfmpegHelper
 
 
         var ffmpegPath = "ffmpeg"; // 如果 ffmpeg 加入了系统 PATH
-        // 或者你也可以写绝对路径，如："C:\\Tools\\ffmpeg.exe"
+        if (!string.IsNullOrEmpty(AppSettings.Ffmpeg))
+        {
+            ffmpegPath = AppSettings.Ffmpeg;
+
+        }
 
         var arguments = $"-i \"{inputFile}\"   -codec: copy" +
             $" -start_number 0" +
             $" -hls_time 10" +
             $" -hls_list_size 0 " +
-           // $" -hls_segment_filename \"index_%03d.ts\"" +
+            // $" -hls_segment_filename \"index_%03d.ts\"" +
             $" \"{outputDir}/index.m3u8\"";
 
         var process = new Process

@@ -2,59 +2,19 @@
 
 import { App } from 'antd';
 import { toast } from 'react-toastify';
+import { defaultHttpApiOptions, type MsgRespBase, type ApiRequestOption, apiBase } from './global'
+
 const loadingId = "http-request"
 let loadingCounter = 0;
 
-
-interface ApiRequestOption {
-    /**
-     * 响应等待容忍度。如果此时间内没有响应，则显示loading框。
-     * 0表示总是显示，-1表示不显示。单位毫秒
-     */
-    tolerance: number;
-
-    /**
-     * 发生错误是否通过toast显示错误。默认显示（false），不显示（静默）为true
-     */
-    silence: boolean;
-
-    noErrorToast: boolean;
-
-    headers: any[]; // 或者更具体的类型，如果知道 headers 的结构
-}
-
-const DEFAULT_OPTION: ApiRequestOption = {
-    tolerance: 500,
-    silence: false,
-    noErrorToast: false,
-    headers: []
-};
-
-let apiBase = 'http://192.168.1.140:8082/api';
-//debug
-if (process.env.NODE_ENV === 'development') {
-    apiBase = 'https://localhost:7150/api';
-}
 console.log("process.env.NODE_ENV: %s", process.env.NODE_ENV);
-//const [messageApi, contextHolder] = message.useMessage();
 
-// const { message: messageApi } = App.useApp();
-
-interface MsgRespBase {
-    Result: number //, Action: string, Path: string,
-    ErrorMsg?: string;
-    Data?: any;
-}
-export {
-    DEFAULT_OPTION
-};
-export type { MsgRespBase };
 
 export default {
     _baseApiPath: apiBase,
-    _defaultOption: DEFAULT_OPTION,
+    _defaultOption: defaultHttpApiOptions,
 
-    post: function (apiPath: string, data: object, option: ApiRequestOption = DEFAULT_OPTION) {
+    post: function (apiPath: string, data: object, option: ApiRequestOption = defaultHttpApiOptions) {
 
         let tempOption = {
             ...this._defaultOption,
@@ -73,9 +33,9 @@ export default {
 
 
 
-        let tolerance = tempOption.tolerance || DEFAULT_OPTION.tolerance;
+        let tolerance = tempOption.tolerance || defaultHttpApiOptions.tolerance;
         if (tolerance < -1) {
-            tolerance = DEFAULT_OPTION.tolerance;
+            tolerance = defaultHttpApiOptions.tolerance;
         }
         if (!tempOption.silence) {
             setTimeout(() => {
