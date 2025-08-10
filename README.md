@@ -51,7 +51,7 @@ Settings are in appsettings-{environment}.json:
 #### Configuration
 | Key                        | Type     | Default Value | Description                                                                                                                                                                    |
 |----------------------------|----------|---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `Host`                     | string   | -             | he api site host                                                                                                                                                               |
+| `Host`                     | string   | -             | The api site host                                                                                                                                                              |
 | `ResourceRoot`             | string   | -             | The resource root user will view                                                                                                                                               |
 | `ResourceCache`            | string   | -             | The cache directory. Temporarily generated files will be placed here, such as video streams                                                                                    |
 | `AccessControlAllowOrigin` | string[] | -             | A list of hosts allowed for cross-origin access, and the host of siteviewer.spa should be included.                                                                            |
