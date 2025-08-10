@@ -55,5 +55,6 @@ All configuration is in appsettings-{environment}.json.
 - AccessControlAllowOrigin：A list of hosts allowed for cross-origin access, and the host of siteviewer.spa should be included.
 - Ffmpeg: Specify the path to the FFmpeg.exe file. It is used to convert videos into streamable formats for online playback. If not configured, video playback will not be available.
 
-
+### Dependences
+If you'r using visual studio, [Web Comppiler](https://marketplace.visualstudio.com/items?itemName=MadsKristensen.WebCompiler)  should be installed from convert scss/less file into css file
 
