@@ -1,7 +1,7 @@
 # Site Viewer
 A web application that displays files and directories on a server, allowing users to download content or stream videos.
 
-## Project Structure
+# Project Structure
 ## siteviewer.spa
 React-based single-page application with client-side routing, created by react-router.
 ### Getting Started
