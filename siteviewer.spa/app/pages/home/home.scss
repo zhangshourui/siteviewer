@@ -12,6 +12,8 @@
     align-items: center;
     gap: 0.5em;
     word-break: break-all;
+    background: #495057;
+    color: #fff;
     //  justify-content: space-between;
     //> a {
     //    text-decoration: none;
@@ -26,8 +28,8 @@
 
       > a {
         text-decoration: none;
-        color: #333;
-        padding: 0.25em 0.5em;
+        color: #fff;
+        padding: 0.1em 0.5em;
         border: 1px solid #ddd;
         border-radius: 4px;
         gap: 0.5em;
@@ -35,10 +37,11 @@
         white-space: nowrap;
         display: flex;
         align-items: center;
+        font-size: 0.8em;
 
         &:hover {
-          background-color: #f3f3f3;
-          color: #007bff;
+          background-color: #c7caf7;
+          color: #000000;
         }
       }
     }

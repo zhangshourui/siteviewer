@@ -20,7 +20,7 @@ namespace SiteViewer.WWW.AppService
             var relativeFile = path.Substring(1).Replace('/', Path.DirectorySeparatorChar);
 
             // Convert /a/b/c to a\b\c, and resolve it into full path
-            var fullPath = FileRep.ResolveCacheFile(relativeFile);
+            var fullPath = FileRep.ResolveCachePath(relativeFile);
 
             // serve as static file if exists at cache first, then at resource root
             if (File.Exists(fullPath))
@@ -30,7 +30,7 @@ namespace SiteViewer.WWW.AppService
             }
             else
             {
-                fullPath = FileRep.ResolveRepFile(relativeFile);
+                fullPath = FileRep.ResolveRepPath(relativeFile);
                 if (File.Exists(fullPath))
                 {
                     await ServeFileAsync(context, fullPath);

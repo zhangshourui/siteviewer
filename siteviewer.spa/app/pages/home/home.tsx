@@ -22,11 +22,15 @@ export default function Home() {
   // const [messageApi, contextHolder] = message.useMessage();
 
 
-  // 监听 /?p=xxxx 变化
+  /**
+   * Page load
+   */
   useEffect(() => {
 
+    const urlParams = new URLSearchParams(window.location.search);
+    const p = urlParams.get('p') || urlParams.get('parentDir') || '/';
+    setParentDir(p);
 
-    handlePopState(); // 初始化时调用一次
 
     const handleScroll = () => {
       if (window.scrollY > 0) {
@@ -35,19 +39,16 @@ export default function Home() {
     };
 
     window.addEventListener('scroll', handleScroll);
-    //  messageApi.info("欢迎使用 SiteViewer");
 
-    setTimeout(() => {
-
-    }, 2000);
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
 
-
-  // fetch data on page loaded
+  /**
+   * Update main page data on `parentDir` changed
+   */
   useEffect(() => {
     if (!parentDir) {
       return;
@@ -64,7 +65,7 @@ export default function Home() {
 
       var cookies = document.cookie.split(';');
       files.forEach(function (file: any) {
-        //cookie中存在`fv-${file.FileId}，则标记为已访问
+        // If `fv-${file.FileId}` exists in cookies, then mark file as visited.
         if (cookies.some(cookie => cookie.trim().startsWith(`fv-${file.FileId}=`))) {
           file.visited = true;
         }
@@ -79,6 +80,7 @@ export default function Home() {
     });
   }, [parentDir]);
 
+  // Scroll restoration
   useEffect(() => {
     if (pageData) {
       requestAnimationFrame(() => {
@@ -90,15 +92,8 @@ export default function Home() {
     }
   }, [pageData]);
 
-  const handlePopState = () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const p = urlParams.get('p') || urlParams.get('parentDir') || '/';
-    setParentDir(p);
-  };
-
-
   /**
-   * 去掉时分秒
+   * Format date to local date string
    * @param dateTime 
    * @returns 
    */
@@ -106,11 +101,12 @@ export default function Home() {
     return new Date(dateTime).toLocaleDateString();
   };
 
+  /**
+   * handle directory click event
+   * @param e 
+   * @param dir 
+   */
   const onViewDir = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, dir: any) => {
-    // if (e) {
-    //   e.preventDefault();
-    //   e.stopPropagation();
-    // }
 
     setErrorMsg("");
     sessionStorage.setItem('ls-scroll-pos-home', '0');
@@ -118,6 +114,12 @@ export default function Home() {
 
   };
 
+  /**
+   * Handle file click event
+   * @param e 
+   * @param file 
+   * @returns 
+   */
   const onViewFile = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, file: any) => {
     if (e) {
       e.preventDefault();
@@ -144,10 +146,12 @@ export default function Home() {
       if (result.Data.Action == "view") {// 浏览器支持的格式，直接跳转
         window.location.href = result.Data.FileUrl;
       }
-      else if (result.Data.Action == "play") {// 视频格式，跳转到播放页面
-        //  route(`/view/play?p=${result.Data.Path}`);
-        //window.location.href = `/view?action=play&p=${encodeURIComponent(result.Data.Path)}`;
+
+      // 视频格式，跳转到播放页面
+      else if (result.Data.Action == "play") {
+
         navigate(`/view?action=play&p=${encodeURIComponent(result.Data.Path)}`, { state: { scrollY: window.scrollY } });
+
       } else {
         window.location.href = result.Data.FileUrl;
         // setErrorMsg("Unsupported file type");
@@ -156,15 +160,22 @@ export default function Home() {
     });
   };
 
+  /**
+   * Handle file rename success event
+   * @param file  new file info. File id is changed, so we need `srcFileId`.
+   * @param srcFileId source file id
+   */
   const onFileRenamed = (file: any, srcFileId: string) => {
+
     setModalActiveFile(null);
-    // 用file替换pageData.Files中的对应文件
+
+    // Replace old file info with new file info
     const index = pageData.Files.findIndex((f: any) => f.FileId === srcFileId);
     if (index !== -1) {
       pageData.Files[index] = { ...file }; // 替换文件信息
     }
     setPageData({ ...pageData });
-    // Handle rename logic here
+
   }
 
 
@@ -224,7 +235,9 @@ export default function Home() {
         </Link>
 
         <div className='file-opt'>
-          <span className='file-info ms-2'>{file.FileSizeReadable}<br /> {formatFileDateTime(file.LastTime)}</span>
+          <span className='file-info ms-2'>{file.FileSizeReadable}<br />
+
+            {formatFileDateTime(file.LastTime)}</span>
 
           <Dropdown menu={{ items: menuItems }} trigger={['click']} className='pop-menu'
             onOpenChange={(open) => {
@@ -261,11 +274,11 @@ export default function Home() {
                   onViewDir(e, { Link: pageData.ParentDirectoryLink });
                 }}
               >
-                ↑向上
+                ↑UP
               </Link>
             }
           </span>
-          <span>{parentDir == "/" ? "/根目录" : parentDir}</span>
+          <span>{parentDir == "/" ? "/root" : parentDir}</span>
         </h5>
 
 

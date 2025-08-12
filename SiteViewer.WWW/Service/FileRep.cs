@@ -1,14 +1,24 @@
 ﻿using Microsoft.AspNetCore.StaticFiles;
 using SiteViewer.WWW.AppService;
 using SiteViewer.WWW.Models;
+using SiteViewer.WWW.Utils;
 
 namespace SiteViewer.WWW.Service
 {
     public static class FileRep
     {
-        public static string ResolveRepFile(string? filePath)
+        /// <summary>
+        ///  Resolve a relative path (file or directory) to a physical file path in the repository.
+        /// </summary>
+        /// <param name="root">Repository root</param>
+        /// <param name="filePath">Relative path</param>
+        /// <remarks>
+        /// Supports formats, e.g. "images/photo.jpg", "/docs/report.pdf", "\docs\report.pdf". Don't use qualified path.
+        /// </remarks>
+        /// <returns></returns>
+        private static string _ResolveRep(string root, string? filePath)
         {
-            if (string.IsNullOrEmpty(AppSettings.ResourceRoot))
+            if (string.IsNullOrEmpty(root))
             {
                 throw new Exception("ResourceRoot is not set in AppConfig. Please check your configuration.");
             }
@@ -21,40 +31,50 @@ namespace SiteViewer.WWW.Service
             {
                 filePath = filePath.Substring(1);
             }
-            var fullPath = Path.Combine(AppSettings.ResourceRoot, filePath.Replace('\\', Path.DirectorySeparatorChar));
+            var fullPath = Path.Combine(root, filePath.Replace('/', Path.DirectorySeparatorChar));
             return fullPath;
         }
 
-        public static string ResolveCacheFile(string? filePath, bool createDirIfNotExists = false)
+        /// <summary>
+        ///  Resolve a relative path (file or directory) to a physical file path in the repository.
+        /// </summary>
+        /// <param name="filePath">Relative path</param>
+        /// <remarks>
+        /// Supports formats, e.g. "images/photo.jpg", "/docs/report.pdf", "\docs\report.pdf". Don't use qualified path.
+        /// </remarks>
+        /// <returns></returns>
+
+        public static string ResolveRepPath(string? filePath)
         {
-            if (string.IsNullOrEmpty(AppSettings.ResourceCache))
-            {
-                throw new Exception("ResourceRoot is not set in AppConfig. Please check your configuration.");
-            }
-
-            if (string.IsNullOrEmpty(filePath))
-            {
-                filePath = "";
-            }
-            var cacheFile = Path.Combine(AppSettings.ResourceCache, filePath.Replace('/', Path.DirectorySeparatorChar).TrimStart(Path.DirectorySeparatorChar));
-
-            if (createDirIfNotExists)
-            {
-                var cacheDir = Path.GetDirectoryName(cacheFile);
-                if (cacheDir != null && !Directory.Exists(cacheDir))
-                {
-                    Directory.CreateDirectory(cacheDir);
-                }
-            }
-            return cacheFile;
+            return _ResolveRep(AppSettings.ResourceRoot, filePath);
         }
 
+        /// <summary>
+        ///  Resolve a relative path (file or directory) to a physical file path of cached directory.
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <remarks>
+        /// Supports formats, e.g. "images/photo.jpg", "/docs/report.pdf", "\docs\report.pdf".
+        /// Don't use qualified path.
+        /// </remarks>
+        /// <returns></returns>
+        public static string ResolveCachePath(string? filePath, bool createDirIfNotExists = false)
+        {
+            return _ResolveRep(AppSettings.ResourceCache, filePath);
+        }
+
+
+        /// <summary>
+        /// Resolve the content type based on the file extension.
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
         public static string GetContentType(string fileName)
         {
             var ext = Path.GetExtension(fileName);
-            if (ExtendMimeType.ContainsKey(ext))
+            if (ExtendMimeType.TryGetValue(ext, out string? value))
             {
-                return ExtendMimeType[ext];
+                return value;
             }
 
             var provider = new FileExtensionContentTypeProvider();
@@ -65,6 +85,11 @@ namespace SiteViewer.WWW.Service
             return contentType;
         }
 
+        /// <summary>
+        /// Check if this file can be opened directly in the browser
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
         public static bool IsBrowerSupportFile(string fileName)
         {
             var ext = Path.GetExtension(fileName);
@@ -84,6 +109,12 @@ namespace SiteViewer.WWW.Service
             return supportedExtensions.Contains(ext);
         }
 
+
+        /// <summary>
+        /// Check if this file is a video file that can be played in the browser.
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
         public static bool IsVideoFile(string fileName)
         {
             var ext = Path.GetExtension(fileName);
@@ -99,7 +130,12 @@ namespace SiteViewer.WWW.Service
             return videoExtensions.Contains(ext);
         }
 
-
+        /// <summary>
+        /// Get all subdirectories in the specified directory, and order by last modified time descending.
+        /// </summary>
+        /// <param name="directory"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public static List<DirectoryEntry> GetSubDirectories(string? directory)
         {
             if (string.IsNullOrEmpty(directory))
@@ -110,7 +146,7 @@ namespace SiteViewer.WWW.Service
             {
                 throw new Exception(nameof(directory) + " should be a relative path, not a fully qualified path.");
             }
-            var full = ResolveRepFile(directory);
+            var full = ResolveRepPath(directory);
             var directories = new List<DirectoryEntry>();
             if (Directory.Exists(full))
             {
@@ -126,14 +162,18 @@ namespace SiteViewer.WWW.Service
                     directories.Add(new DirectoryEntry(Path.GetFileName(dir), directory)
                     {
                         LastTime = Directory.GetLastWriteTime(dir)
-
                     });
                 }
             }
             return directories.OrderByDescending(m => m.LastTime).ToList();
-
         }
 
+        /// <summary>
+        /// Get all files in the specified directory, and order by last modified time descending.
+        /// </summary>
+        /// <param name="directory"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public static List<FileEntry> GetSubFiles(string? directory)
         {
             if (string.IsNullOrEmpty(directory))
@@ -144,7 +184,7 @@ namespace SiteViewer.WWW.Service
             {
                 throw new Exception(nameof(directory) + " should be a relative path, not a fully qualified path.");
             }
-            var full = ResolveRepFile(directory);
+            var full = ResolveRepPath(directory);
 
             var files = new List<FileEntry>();
             //  var fileMd5s = new List<string>();
@@ -164,9 +204,16 @@ namespace SiteViewer.WWW.Service
             return files.OrderByDescending(m => m.LastTime).ToList();
         }
 
+        /// <summary>
+        /// Get a file entry for the specified file.
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        /// <exception cref="FileNotFoundException"></exception>
+
         public static FileEntry GetFile(string file)
         {
-            var repFile = ResolveRepFile(file);
+            var repFile = ResolveRepPath(file);
 
             var dir = Path.GetDirectoryName(file);
             if (!File.Exists(repFile))
@@ -179,61 +226,107 @@ namespace SiteViewer.WWW.Service
                 LastTime = fi.LastWriteTime,
                 FileSize = fi.Length
             };
-
-
         }
 
-        public static bool RenameRepFile(string? filePath, string newFileName)
+        /// <summary>
+        /// Renames a file in the repository.
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <param name="newFileName"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+
+        public static bool RenameFile(string? filePath, string newFileName)
         {
+            // some checks
             if (string.IsNullOrEmpty(AppSettings.ResourceRoot))
             {
                 throw new Exception("ResourceRoot is not set in AppConfig. Please check your configuration.");
             }
 
-            // newFileName 是否合法
+            // Is newFileName a valid file name?
             if (string.IsNullOrEmpty(newFileName) || newFileName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
             {
-                throw new Exception("New file name is invalid.");
+                ThreadHelper.SetLastError("New file name is invalid.");
+                return false;
             }
+            // end checks
 
-            var srcFilePath = ResolveRepFile(filePath); // 原文件物理路径
+            // source file physical path
+            var srcFilePath = ResolveRepPath(filePath);
 
-            // 扩展名不允许修改
+            // File extension is not allowed to change
             var ext = Path.GetExtension(srcFilePath);
             if (!Path.GetExtension(newFileName).Equals(ext, StringComparison.OrdinalIgnoreCase))
             {
-                throw new Exception("File extension cannot be changed.");
+                ThreadHelper.SetLastError("File extension cannot be changed.");
+                return false;
             }
 
-            // 只修改文件名
+            // Replace file name without extension
             var newFilePath = Path.Combine(Path.GetDirectoryName(srcFilePath) ?? string.Empty, newFileName);
             if (File.Exists(newFilePath))
             {
-                throw new Exception("同名文件已存在！");
+                ThreadHelper.SetLastError("File extension cannot be changed.");
+                return false;
             }
+
+            // Here change the file name(through `move` like linux)
             File.Move(srcFilePath, newFilePath);
 
-            // 移除缓存文件
-            var srcCachedFilePath = ResolveCacheFile(filePath, false);
+            // remove cached file if exists
+            var srcCachedFilePath = ResolveCachePath(filePath, false);
             if (File.Exists(srcCachedFilePath))
             {
                 File.Delete(srcCachedFilePath);
             }
 
+            // video cache directory.
+            var cacheDir = srcCachedFilePath + "-stream";
+            if (Directory.Exists(cacheDir))
+            {
+                Directory.Delete(cacheDir, true);
+            }
 
             return true;
+        }
+
+        /// <summary>
+        /// Converts the relative path of the file repository to the public URL.
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        public static string ResolveRepFileToPubUrl(string? filePath)
+        {
+            if (string.IsNullOrEmpty(filePath))
+            {
+                return string.Empty;
+            }
+            filePath = filePath.TrimStart('/').TrimStart('\\').Replace('\\', '/'); // 去除开头的斜杠或反斜杠
+
+            string[] parts = filePath.Split('/');
+
+            for (int i = 0; i < parts.Length; i++)
+            {
+                parts[i] = Uri.EscapeDataString(parts[i]);
+            }
+
+            // 重新组合路径
+            return AppSettings.Host.TrimEnd('/') + '/' + string.Join("/", parts);
 
         }
 
-
-        private static Dictionary<string, string> ExtendMimeType = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        /// <summary>
+        /// Extended MIME types for specific file extensions that are not covered by the default MIME type provider.
+        /// Also it overrides some default MIME types for better compatibility with browsers.
+        /// </summary>
+        private static readonly Dictionary<string, string> ExtendMimeType = new(StringComparer.OrdinalIgnoreCase)
         {
             { ".ts", "video/mp2t"},
             {".js", "text/plain"},
             {".html", "text/plain"},
             {".log", "text/plain"},
             {".md", "text/plain"},
-
         };
     }
 }

@@ -76,7 +76,7 @@ namespace SiteViewer.WWW.Controllers
             {
                 return NotFound();
             }
-            var fullPath = FileRep.ResolveRepFile(filePath);
+            var fullPath = FileRep.ResolveRepPath(filePath);
             if (!System.IO.File.Exists(fullPath))
             {
                 return NotFound();
@@ -96,7 +96,7 @@ namespace SiteViewer.WWW.Controllers
             {
                 return NotFound();
             }
-            var fullPath = FileRep.ResolveRepFile(filePath);
+            var fullPath = FileRep.ResolveRepPath(filePath);
             if (!System.IO.File.Exists(fullPath))
             {
                 return NotFound();
@@ -121,13 +121,13 @@ namespace SiteViewer.WWW.Controllers
                 return NotFound();
             }
             //文件仓库路径
-            var repFile = FileRep.ResolveRepFile(requestFile);
+            var repFile = FileRep.ResolveRepPath(requestFile);
             if (!System.IO.File.Exists(repFile))
             {
                 return NotFound();
             }
             // 缓存路径
-            var cacheFile = FileRep.ResolveCacheFile(requestFile, true);
+            var cacheFile = FileRep.ResolveCachePath(requestFile, true);
             var ext = Path.GetExtension(repFile).ToLowerInvariant();
 
             if (ext.Equals(".ts", StringComparison.OrdinalIgnoreCase) || ext.Equals(".mp4", StringComparison.OrdinalIgnoreCase))
