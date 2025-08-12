@@ -1,9 +1,9 @@
 # Site Viewer
-The web project can show the files &amp; directories on the server, and user can download it, or play the videos.
+A web application that displays files and directories on a server, allowing users to download content or stream videos.
 
-# Projects
+# Project Structure
 ## siteviewer.spa
-The client site created by react-router.
+React-based single-page application with client-side routing, created by react-router.
 ### Getting Started
 Install the dependencies:
 
@@ -21,7 +21,7 @@ npm run dev
 
 Your application will be available at `http://localhost:5173`.
 
-## Building for Production
+### Building for Production
 
 Create a production build:
 
@@ -29,8 +29,8 @@ Create a production build:
 npm run build
 ```
   
-## SiteViewer.WWW
-The server-side site, which can provide apis, created by dotnet 9.
+## SiteViewer.WWW (Server)
+ASP.NET Core 9 server providing APIs and file services.
 
 ### Getting Started
 
@@ -47,13 +47,21 @@ dotnet build .
 dotnet publish . --output ../publish -c release
 ```
 ### Configuration
-All configuration is in appsettings-{environment}.json.
+Settings are in appsettings-{environment}.json:
+#### Configuration
+| Key                        | Type     | Default Value | Description                                                                                                                                                                    |
+|----------------------------|----------|---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Host`                     | string   | -             | The api site host                                                                                                                                                              |
+| `ResourceRoot`             | string   | -             | The resource root user will view                                                                                                                                               |
+| `ResourceCache`            | string   | -             | The cache directory. Temporarily generated files will be placed here, such as video streams                                                                                    |
+| `AccessControlAllowOrigin` | string[] | -             | A list of hosts allowed for cross-origin access, and the host of siteviewer.spa should be included.                                                                            |
+| `Ffmpeg`                   | string   | ffmpeg        | Specify the path to the FFmpeg.exe file. It is used to convert videos into streamable formats for online playback. If not configured, video playback will not be available.    |
 
-- Host: The api site host。
-- ResourceRoot：The resource root user will view.
-- ResourceCache: The cache directory. Temporarily generated files will be placed here, such as video streams.
-- AccessControlAllowOrigin：A list of hosts allowed for cross-origin access, and the host of siteviewer.spa should be included.
-- Ffmpeg: Specify the path to the FFmpeg.exe file. It is used to convert videos into streamable formats for online playback. If not configured, video playback will not be available.
+### Dependences
+- Visual Studio Users: Install [Web Compiler](https://marketplace.visualstudio.com/items?itemName=MadsKristensen.WebCompiler) extension for SCSS/LESS compilation.
 
-
-
+# Features
+- File and directory browsing
+- File download capability
+- Video streaming (requires FFmpeg configuration)
+- Cross-origin resource sharing (CORS) support
